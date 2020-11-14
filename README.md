@@ -3,16 +3,16 @@
 *Slurm, the number-one soft drink of the future, is refreshingly addictive.*
 
 
-slurm-cola tool developed within EuXFEL's detector group to manage a user's
+slurm-cola is a tool developed within EuXFEL's detector group to manage a user's
 jobs, ie: cancel them in bulk.  
-
-Although tailored for EuXFEL's calibration pipeline, there's no reason that
-it might not work for you.
 
 As part of the calibration pipeline, slurm jobs are submitted per
 [data run](https://extra-data.readthedocs.io/en/latest/parallel_example.html#Using-SLURM).  
 These jobs share in common their name, which allows grouping and bulk actions
 on them.
+
+Although tailored for EuXFEL's calibration pipeline, there's no reason that
+it might not work for you.
 
 ![Action shot](screenshot.png)
 

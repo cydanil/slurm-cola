@@ -26,10 +26,7 @@ def main():
 
     log = LogWindow()
     main_window.pbLog.clicked.connect(log.display)
-
-    # Connect the various objects to send log message to the logger.
     handler.log.connect(log.log)
-    job_window.log.connect(log.log)
 
     # Display the main window, through its parent.
     window.show()

@@ -3,7 +3,7 @@ from typing import Dict
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QObject, QRect, Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QDialog, QGroupBox, QLineEdit,
-                             QMessageBox, QPushButton, QTextEdit)
+                             QPushButton, QTextEdit)
 
 from .handler import handler
 
@@ -11,7 +11,6 @@ from .handler import handler
 class JobWindow(QObject):
     """JobWindow lists all the information found in a job dictionary."""
     done = pyqtSignal()
-    log = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -66,11 +65,4 @@ class JobWindow(QObject):
 
     def cancel_job(self):
         job = int(self.leJobId.text())
-        self.log.emit(f'Requesting cancellation for {job}.')
-        ret = handler.cancel_job([job])
-
-        if ret.returncode != 0:
-            error = ret.stderr.decode()
-            msg = f'There was an issue cancelling <b>{job}</b>:\n {error}'
-            self.log.emit(msg)
-            QMessageBox.warning(self.parent, 'Oops', msg)
+        handler.cancel_jobs([job])

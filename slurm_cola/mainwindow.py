@@ -3,9 +3,10 @@ import sys
 from collections import defaultdict
 from typing import Dict, List, Tuple
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRect
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRect, Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QPushButton
+from PyQt5.QtWidgets import (QListWidget, QListWidgetItem,
+                             QMessageBox, QPushButton)
 
 from .handler import handler, USERNAME
 
@@ -26,8 +27,16 @@ class MainWindow(QObject):
         lwJobs.setObjectName('jobList')
         lwJobs.setGeometry(QRect(20, 30, 760, 470))
         lwJobs.setFont(QFont('monospace'))
+        lwJobs.itemDoubleClicked.connect(self.check_item)
         lwJobs.itemClicked.connect(self.open_properties)
         self.lwJobs = lwJobs
+
+        pbCancel = QPushButton(parent)
+        pbCancel.setObjectName('pbCancel')
+        pbCancel.setGeometry(QRect(120, 540, 100, 40))
+        pbCancel.setText('Cancel jobs')
+        pbCancel.setToolTip('Cancel checked jobs')
+        pbCancel.clicked.connect(self.on_pbCancel_clicked)
 
         pbLog = QPushButton(parent)
         pbLog.setObjectName('pbLog')
@@ -77,15 +86,30 @@ class MainWindow(QObject):
         for group in groups.values():
             for job_id, properties in group:
                 line = (str(job_id) + '    '
-                        + properties['JobState'] + '    '
-                        + properties['StartTime'] + '    '
-                        + properties['NodeList'] + '    '
+                        + properties['JobState'].ljust(9) + '   '
+                        + properties['StartTime'].ljust(19) + '   '
+                        + properties['NodeList'].ljust(11) + '   '
                         + properties['JobName'])
-                self.lwJobs.addItem(line)
+
+                item = QListWidgetItem()
+                item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+                item.setCheckState(Qt.Unchecked)
+                item.setText(line)
+
+                self.lwJobs.addItem(item)
             self.lwJobs.addItem('')
 
     @pyqtSlot(QListWidgetItem)
-    def open_properties(self, item):
+    def check_item(self, item: QListWidgetItem):
+        if not item.text():
+            return  # FIXME: make textless items uncheckable
+        if item.checkState() == Qt.Checked:
+            item.setCheckState(Qt.Unchecked)
+        else:
+            item.setCheckState(Qt.Checked)
+
+    @pyqtSlot(QListWidgetItem)
+    def open_properties(self, item: QListWidgetItem):
         if item is None or not item.text() or 'Nothing running' in item.text():
             return
 
@@ -99,3 +123,22 @@ class MainWindow(QObject):
         if item is None:
             item = self.lwJobs.item(0)
         self.open_properties(item)
+
+    def on_pbCancel_clicked(self):
+        selection = []
+        for idx in range(self.lwJobs.count()):
+            item = self.lwJobs.item(idx)
+            if item.checkState() == Qt.Checked:
+                selection.append(int(item.text().split()[0]))
+
+        if not selection:
+            return
+
+        msg = f'You are about to cancel {len(selection)} jobs, continue?'
+        ret = QMessageBox.warning(self.parent(), 'Confirmation', msg,
+                                  QMessageBox.Cancel | QMessageBox.Yes,
+                                  QMessageBox.Cancel)
+        if ret == QMessageBox.Cancel:
+            return
+
+        handler.cancel_jobs(selection)

@@ -44,7 +44,6 @@ though.
 
 ## Future Development
 *slurm-cola* is still under early development. There are plans of, in the following order:
-- [ ] batch cancellation (despite what's been promised, only a job at a time can be dealt with currently)
 - [ ] auto-refresh with feedback
 - [ ] cool logo
 - [ ] prettier job info display

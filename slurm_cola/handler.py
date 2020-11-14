@@ -6,6 +6,7 @@ from subprocess import PIPE
 from typing import Dict, List, Optional
 
 from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QMessageBox
 
 
 USERNAME = sys.argv[1] if len(sys.argv) == 2 else os.environ['USER']
@@ -50,6 +51,8 @@ class JobInterface(QObject):
                  for line in ret.stdout.decode().splitlines()[1:]]
         job_ids = [int(line[0]) for line in lines]
 
+        self.log.emit(f'Retrieving information for {len(job_ids)} jobs')
+
         statuses = {}
         for job in job_ids:
             cmd = f'scontrol show jobid -dd {job}'
@@ -83,16 +86,20 @@ class JobInterface(QObject):
 
             statuses[job] = properties
 
-        self.log.emit(f'Found {len(statuses)} jobs')
         return statuses or None
 
-    def cancel_job(self, jobs: List[int]):
+    def cancel_jobs(self, jobs: List[int]):
         """Cancel all the given jobs"""
         self.log.emit(f'Cancelling job(s) {jobs}')
         jobs = [str(job_id) for job_id in jobs]
 
         ret = subprocess.run(['scancel', *jobs], stderr=subprocess.PIPE)
-        return ret
+
+        if ret.returncode != 0:
+            error = ret.stderr.decode()
+            msg = f'There was an issue cancelling these jobs:\n{error}'
+            self.log.emit(msg)
+            QMessageBox.warning(self.parent(), 'Oops', msg)
 
 
 # A poor man's singleton

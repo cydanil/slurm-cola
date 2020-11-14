@@ -1,5 +1,7 @@
-from typing import Dict, List, Tuple
 import sys
+
+from collections import defaultdict
+from typing import Dict, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRect
 from PyQt5.QtGui import QFont
@@ -64,21 +66,15 @@ class MainWindow(QObject):
             self.lwJobs.addItem(f'Nothing running for {USERNAME} now')
             return
 
-        # Group jobs by their name
-        groups: List[List[Tuple[int, Dict[str, str]]]] = []
-        previous = None
-        group = []
+        # Group jobs by their name.
+        # This step is required as jobs belonging together are not necessarily
+        # allocated together: it might be that a job launches a related job
+        # at a later point.
+        groups: Dict[str, List[Tuple[int, Dict[str, str]]]] = defaultdict(list)
         for job_id, properties in self.jobs.items():
-            if properties['JobName'] != previous:
-                groups.append(group)
-                group = []
-                previous = properties['JobName']
-            group.append((job_id, properties))
-        groups.append(group)
+            groups[properties['JobName']].append((job_id, properties))
 
-        groups = groups[1:]  # FIXME: hack to work around the initial None
-
-        for group in groups:
+        for group in groups.values():
             for job_id, properties in group:
                 line = (str(job_id) + '    '
                         + properties['JobState'] + '    '

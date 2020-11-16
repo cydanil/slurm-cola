@@ -1,6 +1,6 @@
 from typing import Dict
 
-from PyQt5.QtCore import pyqtSlot, pyqtSignal, QObject, QRect, Qt
+from PyQt5.QtCore import pyqtSlot, QObject, QRect, Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QDialog, QGroupBox, QLineEdit,
                              QPushButton, QTextEdit)
@@ -10,7 +10,6 @@ from .handler import handler
 
 class JobWindow(QObject):
     """JobWindow lists all the information found in a job dictionary."""
-    done = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)

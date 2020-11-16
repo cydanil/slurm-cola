@@ -65,7 +65,7 @@ class MainWindow(QObject):
         pbQuit.clicked.connect(sys.exit)
 
         # self.jobs is set in self.list_jobs()
-        self.jobs: Dict[int: Dict[str, str]] = None
+        self.jobs: Dict[str: Dict[str, str]] = None
 
     def list_jobs(self):
         self.lwJobs.clear()
@@ -85,11 +85,11 @@ class MainWindow(QObject):
 
         for group in groups.values():
             for job_id, properties in group:
-                line = (str(job_id) + '    '
-                        + properties['JobState'].ljust(9) + '   '
-                        + properties['StartTime'].ljust(19) + '   '
-                        + properties['NodeList'].ljust(11) + '   '
-                        + properties['JobName'])
+                line = job_id + '    '
+                line += properties['JobState'].ljust(12)
+                line += properties['StartTime'].ljust(22)
+                line += properties['NodeList'].ljust(14)
+                line += properties['JobName']
 
                 item = QListWidgetItem()
                 item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
@@ -97,7 +97,7 @@ class MainWindow(QObject):
                 item.setText(line)
 
                 self.lwJobs.addItem(item)
-            self.lwJobs.addItem('')
+            self.lwJobs.addItem('')  # Add a blank line between groups
 
     @pyqtSlot(QListWidgetItem)
     def check_item(self, item: QListWidgetItem):
@@ -113,7 +113,7 @@ class MainWindow(QObject):
         if item is None or not item.text() or 'Nothing running' in item.text():
             return
 
-        job = int(item.text().split()[0])
+        job = item.text().split()[0]
         properties = self.jobs[job]
 
         self.display_request.emit(job, properties)
@@ -129,7 +129,7 @@ class MainWindow(QObject):
         for idx in range(self.lwJobs.count()):
             item = self.lwJobs.item(idx)
             if item.checkState() == Qt.Checked:
-                selection.append(int(item.text().split()[0]))
+                selection.append(item.text().split()[0])
 
         if not selection:
             return

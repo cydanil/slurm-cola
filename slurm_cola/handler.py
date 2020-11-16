@@ -25,9 +25,9 @@ class JobInterface(QObject):
 
     log = pyqtSignal(str)
 
-    def list_jobs(self, mode: Optional[str] = None) -> Optional[Dict[int, Dict[str, str]]]:  # noqa
+    def list_jobs(self, mode: Optional[str] = None) -> Optional[Dict[str, Dict[str, str]]]:  # noqa
         """Check for jobs, and return a dictionary of
-        {jobid (int): job_properties}.
+        {jobid (str): job_properties}.
 
         job_properties is also a dictionary that contains further information
         about the job, such as the notebook it runs, its dependencies (if any),
@@ -49,7 +49,7 @@ class JobInterface(QObject):
         # awk 'NR>1 { print $1 }'
         lines = [line.strip().split()
                  for line in ret.stdout.decode().splitlines()[1:]]
-        job_ids = [int(line[0]) for line in lines]
+        job_ids = [line[0] for line in lines]
 
         self.log.emit(f'Retrieving information for {len(job_ids)} jobs')
 
@@ -88,10 +88,9 @@ class JobInterface(QObject):
 
         return statuses or None
 
-    def cancel_jobs(self, jobs: List[int]):
+    def cancel_jobs(self, jobs: List[str]):
         """Cancel all the given jobs"""
         self.log.emit(f'Cancelling job(s) {jobs}')
-        jobs = [str(job_id) for job_id in jobs]
 
         ret = subprocess.run(['scancel', *jobs], stderr=subprocess.PIPE)
 

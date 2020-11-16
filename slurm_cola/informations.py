@@ -63,5 +63,5 @@ class JobWindow(QObject):
         self.parent.show()
 
     def cancel_job(self):
-        job = int(self.leJobId.text())
+        job = self.leJobId.text()
         handler.cancel_jobs([job])

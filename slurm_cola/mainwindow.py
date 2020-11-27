@@ -15,7 +15,7 @@ class MainWindow(QObject):
     """MainWindow is the entry point of slurm-cola.
     It contains a list of jobs for this user.
     """
-    display_request = pyqtSignal(int, object)
+    display_request = pyqtSignal(str, object)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -30,32 +30,39 @@ class MainWindow(QObject):
         lwJobs.itemClicked.connect(self.check_item)
         self.lwJobs = lwJobs
 
+        cbAutoRefresh = QCheckBox(parent)
+        cbAutoRefresh.setObjectName('cbAutoRefresh')
+        cbAutoRefresh.setGeometry(QRect(20, 540, 100, 40))
+        cbAutoRefresh.setText('Auto Refresh')
+        cbAutoRefresh.setToolTip('Refresh every 3 seconds')
+        self.cbAutoRefresh = cbAutoRefresh
+
+        pbRefresh = QPushButton(parent)
+        pbRefresh.setObjectName('pbRefresh')
+        pbRefresh.setGeometry(QRect(120, 540, 100, 40))
+        pbRefresh.setText('Refresh')
+        pbRefresh.setToolTip(f"Rescan {USERNAME} jobs")
+        pbRefresh.clicked.connect(self.list_jobs)
+
+        pbProperties = QPushButton(parent)
+        pbProperties.setObjectName('pbProperties')
+        pbProperties.setGeometry(QRect(260, 540, 100, 40))
+        pbProperties.setText('Properties')
+        pbProperties.setToolTip("The selected job's properties")
+        pbProperties.clicked.connect(self.on_pbProperties_clicked)
+
         pbCancel = QPushButton(parent)
         pbCancel.setObjectName('pbCancel')
-        pbCancel.setGeometry(QRect(120, 540, 100, 40))
+        pbCancel.setGeometry(QRect(400, 540, 100, 40))
         pbCancel.setText('Cancel jobs')
         pbCancel.setToolTip('Cancel checked jobs')
         pbCancel.clicked.connect(self.on_pbCancel_clicked)
 
         pbLog = QPushButton(parent)
         pbLog.setObjectName('pbLog')
-        pbLog.setGeometry(QRect(260, 540, 100, 40))
+        pbLog.setGeometry(QRect(540, 540, 100, 40))
         pbLog.setText('View Logs')
         self.pbLog = pbLog
-
-        pbProperties = QPushButton(parent)
-        pbProperties.setObjectName('pbProperties')
-        pbProperties.setGeometry(QRect(400, 540, 100, 40))
-        pbProperties.setText('Properties')
-        pbProperties.setToolTip("The selected job's properties")
-        pbProperties.clicked.connect(self.on_pbProperties_clicked)
-
-        pbRefresh = QPushButton(parent)
-        pbRefresh.setObjectName('pbRefresh')
-        pbRefresh.setGeometry(QRect(540, 540, 100, 40))
-        pbRefresh.setText('Refresh')
-        pbRefresh.setToolTip(f"Rescan {USERNAME} jobs")
-        pbRefresh.clicked.connect(self.list_jobs)
 
         pbQuit = QPushButton(parent)
         pbQuit.setObjectName('pbQuit')

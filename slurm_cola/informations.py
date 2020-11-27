@@ -54,10 +54,10 @@ class JobWindow(QObject):
         pbClose.setGeometry(QRect(490, 370, 116, 40))
         pbClose.clicked.connect(parent.close)
 
-    @pyqtSlot(int, object)
-    def show(self, job_id: int, properties: Dict[str, str]):
+    @pyqtSlot(str, object)
+    def show(self, job_id: str, properties: Dict[str, str]):
         self.parent.setWindowTitle(f'Job {job_id} Properties')
-        self.leJobId.setText(str(job_id))
+        self.leJobId.setText(job_id)
         props = '\n'.join(f'{key}: {val}' for key, val in properties.items())
         self.teProperties.setText(props)
         self.parent.show()

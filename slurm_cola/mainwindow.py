@@ -27,8 +27,7 @@ class MainWindow(QObject):
         lwJobs.setObjectName('jobList')
         lwJobs.setGeometry(QRect(20, 30, 760, 470))
         lwJobs.setFont(QFont('monospace'))
-        lwJobs.itemDoubleClicked.connect(self.check_item)
-        lwJobs.itemClicked.connect(self.open_properties)
+        lwJobs.itemClicked.connect(self.check_item)
         self.lwJobs = lwJobs
 
         pbCancel = QPushButton(parent)

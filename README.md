@@ -44,6 +44,5 @@ though.
 
 ## Future Development
 *slurm-cola* is still under early development. There are plans of, in the following order:
-- [ ] auto-refresh with feedback
 - [ ] cool logo
 - [ ] prettier job info display

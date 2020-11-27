@@ -3,9 +3,9 @@ import sys
 from collections import defaultdict
 from typing import Dict, List, Tuple
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRect, Qt
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject, QRect, Qt, QTimer
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import (QListWidget, QListWidgetItem,
+from PyQt5.QtWidgets import (QCheckBox, QListWidget, QListWidgetItem,
                              QMessageBox, QPushButton)
 
 from .handler import handler, USERNAME
@@ -23,6 +23,10 @@ class MainWindow(QObject):
         parent.setWindowTitle(f'Slurm-Cola Job Administation for {USERNAME}')
         parent.resize(800, 600)
 
+        self._timer = QTimer(parent=self)
+        self._timer.setInterval(3 * 1000)
+        self._timer.timeout.connect(self.list_jobs)
+
         lwJobs = QListWidget(parent)
         lwJobs.setObjectName('jobList')
         lwJobs.setGeometry(QRect(20, 30, 760, 470))
@@ -35,7 +39,7 @@ class MainWindow(QObject):
         cbAutoRefresh.setGeometry(QRect(20, 540, 100, 40))
         cbAutoRefresh.setText('Auto Refresh')
         cbAutoRefresh.setToolTip('Refresh every 3 seconds')
-        self.cbAutoRefresh = cbAutoRefresh
+        cbAutoRefresh.stateChanged.connect(self.on_cbAutoRefresh_clicked)
 
         pbRefresh = QPushButton(parent)
         pbRefresh.setObjectName('pbRefresh')
@@ -150,4 +154,17 @@ class MainWindow(QObject):
         handler.cancel_jobs(selection)
 
         # Refresh the list
+        ticking = self._timer.isActive()
+        self._timer.stop()
+
         self.list_jobs()
+
+        if ticking:
+            self._timer.start()
+
+    @pyqtSlot(int)
+    def on_cbAutoRefresh_clicked(self, state):
+        if state == Qt.Checked:
+            self._timer.start()
+        else:
+            self._timer.stop()

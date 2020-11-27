@@ -6,8 +6,8 @@ with open('README.md', 'r') as fin:
 setup(
      name='slurm-cola',
      version='0.0.1',
-     author='XCAL says whaat?',
-     author_email='xcal@xfel.eu',
+     author='Cyril Danilevski',
+     author_email='cydanil@gmail.com',
      description='A tool to easily cancel slurm jobs belonging together',
      long_description=long_description,
      long_description_content_type="text/markdown",

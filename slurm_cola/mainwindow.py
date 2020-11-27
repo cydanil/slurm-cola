@@ -141,3 +141,6 @@ class MainWindow(QObject):
             return
 
         handler.cancel_jobs(selection)
+
+        # Refresh the list
+        self.list_jobs()

@@ -98,6 +98,7 @@ class MainWindow(QObject):
                 line = job_id + '    '
                 line += properties['JobState'].ljust(12)
                 line += properties['StartTime'].ljust(22)
+                line += properties['RunTime'].ljust(12)
                 line += properties['NodeList'].ljust(14)
                 line += properties['JobName']
 

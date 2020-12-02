@@ -55,7 +55,6 @@ class LogWindow(QObject):
     def log(self, content):
         header = dt.strftime(dt.now(), '%Y/%m/%d %H:%M:%S> ')
         self.teLog.append(header + content)
-        print(header + content)
 
     def save(self):
         filename, _ = QFileDialog.getSaveFileName(

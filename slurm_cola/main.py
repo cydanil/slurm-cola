@@ -23,6 +23,7 @@ def main():
 
     job_window = JobWindow()
     main_window.display_request.connect(job_window.show)
+    main_window.update_request.connect(job_window.update)
 
     log = LogWindow()
     main_window.pbLog.clicked.connect(log.display)

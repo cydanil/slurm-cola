@@ -16,6 +16,7 @@ class MainWindow(QObject):
     It contains a list of jobs for this user.
     """
     display_request = pyqtSignal(str, object)
+    update_request = pyqtSignal(str, object)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -32,6 +33,7 @@ class MainWindow(QObject):
         lwJobs.setGeometry(QRect(20, 30, 760, 470))
         lwJobs.setFont(QFont('monospace'))
         lwJobs.itemClicked.connect(self.check_item)
+        lwJobs.currentItemChanged.connect(self.on_currentItemChanged)
         self.lwJobs = lwJobs
 
         cbAutoRefresh = QCheckBox(parent)
@@ -128,6 +130,16 @@ class MainWindow(QObject):
         properties = self.jobs[job]
 
         self.display_request.emit(job, properties)
+
+    @pyqtSlot(QListWidgetItem, QListWidgetItem)
+    def on_currentItemChanged(self, current: QListWidgetItem, previous: QListWidgetItem):  # noqa
+        if current is None or not current.text() or 'Nothing running' in current.text():  # noqa
+            return
+
+        job = current.text().split()[0]
+        properties = self.jobs[job]
+
+        self.update_request.emit(job, properties)
 
     def on_pbProperties_clicked(self):
         item = self.lwJobs.currentItem()

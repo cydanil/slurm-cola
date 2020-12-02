@@ -62,6 +62,11 @@ class JobWindow(QObject):
         self.teProperties.setText(props)
         self.parent.show()
 
+    @pyqtSlot(str, object)
+    def update(self, job_id: str, properties: Dict[str, str]):
+        if self.parent.isVisible():
+            self.show(job_id, properties)
+
     def cancel_job(self):
         job = self.leJobId.text()
         handler.cancel_jobs([job])

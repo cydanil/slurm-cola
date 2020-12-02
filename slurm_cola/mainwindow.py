@@ -32,7 +32,7 @@ class MainWindow(QObject):
         lwJobs.setObjectName('jobList')
         lwJobs.setGeometry(QRect(20, 30, 760, 470))
         lwJobs.setFont(QFont('monospace'))
-        lwJobs.itemClicked.connect(self.check_item)
+        lwJobs.itemDoubleClicked.connect(self.check_item)
         lwJobs.currentItemChanged.connect(self.on_currentItemChanged)
         self.lwJobs = lwJobs
 
